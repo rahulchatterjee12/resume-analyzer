@@ -29,6 +29,6 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
     "**/*.mts"
-  ],
+, "models/User.js", "lib/dbConnect.js", "models/Report.js", "lib/geminiClient.js", "app/api/analyze/route.js", "lib/extractText.js", "app/dashboard/page.jsx", "lib/razorpayClient.js", "app/api/payment/create-order/route.js", "app/dashboard/report/[id]/page.jsx", "components/shared/ExcelExportBtn.jsx", "app/plans/page.jsx", "components/layout/Navbar.jsx", "app/layout.jsx", "app/api/auth/[...nextauth]/route.js", "app/(auth)/signup/page.jsx", "app/(auth)/login/page.jsx", "app/profile/page.jsx", "app/api/payment/verify/route.js"  ],
   "exclude": ["node_modules"]
 }

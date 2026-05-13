@@ -9,9 +9,16 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "next": "16.2.6",
-    "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "@google/generative-ai": "^0.24.1",
+    "bcryptjs": "^3.0.3",
+    "mongoose": "^9.6.2",
+    "next": "^16.2.6",
+    "next-auth": "^4.24.14",
+    "pdf-parse": "^2.4.5",
+    "razorpay": "^2.9.6",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
