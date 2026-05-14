@@ -60,7 +60,7 @@ export async function POST(request) {
       { status: 200 },
     );
   } catch (error) {
-    console.error("Analyze Route Error:", error);
+    console.log("Analyze Route Error:", error);
     return NextResponse.json(
       { error: "Something went wrong during analysis" },
       { status: 500 },
