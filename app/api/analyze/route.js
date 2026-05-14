@@ -12,8 +12,8 @@ export async function POST(request) {
     const formData = await request.formData();
     const jobTitle = formData.get("jobTitle");
     const jobDescription = formData.get("jobDescription");
-    const userId = formData.get("userId"); // Assuming you pass the logged-in user's ID
-    const files = formData.getAll("resumes"); // Array of uploaded PDF files
+    const userId = formData.get("userId");
+    const files = formData.getAll("resumes");
 
     if (!files || files.length === 0) {
       return NextResponse.json(
