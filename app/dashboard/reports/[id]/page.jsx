@@ -13,16 +13,34 @@ export default async function ReportPage({ params }) {
 
   if (!report) {
     return (
-      <div className="min-h-[calc(100vh-80px)] flex items-center justify-center bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-800 via-zinc-950 to-black font-sans">
-        <div className="bg-red-500/10 border border-red-500/20 text-red-400 px-8 py-6 rounded-2xl backdrop-blur-md shadow-2xl">
-          <h2 className="text-xl font-bold mb-2">Report Not Found</h2>
-          <p className="text-sm opacity-80">
-            This analysis may have been deleted or doesn't exist.
+      <div className="min-h-[calc(100vh-64px)] flex items-center justify-center bg-zinc-950 font-sans">
+        <div className="glass-card p-8 text-center max-w-sm">
+          <div className="w-14 h-14 rounded-2xl bg-red-500/10 flex items-center justify-center mx-auto mb-4">
+            <svg className="w-7 h-7 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <h2 className="text-xl font-bold text-white mb-2">Report Not Found</h2>
+          <p className="text-sm text-zinc-500">
+            This analysis may have been deleted or doesn&apos;t exist.
           </p>
         </div>
       </div>
     );
   }
+
+  // Sort results by match percentage
+  const sortedResults = [...report.analysisResults].sort(
+    (a, b) => b.matchPercentage - a.matchPercentage
+  );
+
+  // Calculate summary stats
+  const totalCandidates = sortedResults.length;
+  const avgMatch = totalCandidates > 0
+    ? Math.round(sortedResults.reduce((sum, c) => sum + c.matchPercentage, 0) / totalCandidates)
+    : 0;
+  const topScore = totalCandidates > 0 ? sortedResults[0].matchPercentage : 0;
+  const topScorer = totalCandidates > 0 ? sortedResults[0].candidateName : "N/A";
 
   // Format the data specifically for the Excel Export
   const exportData = report.analysisResults.map((candidate) => ({
@@ -39,34 +57,43 @@ export default async function ReportPage({ params }) {
       return {
         text: "text-emerald-400",
         bg: "bg-emerald-500/10",
-        border: "border-emerald-500/20",
+        border: "border-emerald-500/15",
         bar: "bg-emerald-400",
       };
     if (score >= 50)
       return {
         text: "text-amber-400",
         bg: "bg-amber-500/10",
-        border: "border-amber-500/20",
+        border: "border-amber-500/15",
         bar: "bg-amber-400",
       };
     return {
       text: "text-red-400",
       bg: "bg-red-500/10",
-      border: "border-red-500/20",
+      border: "border-red-500/15",
       bar: "bg-red-400",
     };
   };
 
+  const getRankBadge = (index) => {
+    if (index === 0) return { emoji: "🥇", bg: "bg-amber-500/10", border: "border-amber-500/15" };
+    if (index === 1) return { emoji: "🥈", bg: "bg-zinc-400/10", border: "border-zinc-400/15" };
+    if (index === 2) return { emoji: "🥉", bg: "bg-orange-500/10", border: "border-orange-500/15" };
+    return null;
+  };
+
   return (
-    <div className="min-h-[calc(100vh-80px)] py-12 px-4 sm:px-6 lg:px-8 bg-linear-to-b from-zinc-800 via-zinc-950 to-black font-sans text-zinc-100">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-[calc(100vh-64px)] py-12 px-4 sm:px-6 lg:px-8 bg-zinc-950 font-sans text-zinc-100 relative overflow-hidden">
+      <div className="absolute inset-0 grid-pattern opacity-15"></div>
+
+      <div className="relative max-w-7xl mx-auto">
         {/* Header Section */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 pb-6 border-b border-white/10 animate-fade-in-up gap-6 sm:gap-0">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 pb-6 border-b border-white/[0.06] animate-fade-in-up gap-6 sm:gap-0">
           <div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white mb-2">
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-2">
               Analysis Results
             </h1>
-            <div className="flex items-center text-zinc-400 text-sm font-medium">
+            <div className="flex items-center text-zinc-500 text-sm font-medium">
               <svg
                 className="w-4 h-4 mr-2 text-blue-400"
                 fill="none"
@@ -81,126 +108,151 @@ export default async function ReportPage({ params }) {
                 ></path>
               </svg>
               Role:{" "}
-              <span className="text-zinc-200 ml-1.5">{report.jobTitle}</span>
+              <span className="text-zinc-300 ml-1.5">{report.jobTitle}</span>
             </div>
           </div>
 
-          <div className="w-full sm:w-auto relative group">
-            <div className="absolute -inset-0.5 bg-linear-to-r from-blue-500 to-indigo-500 rounded-xl blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
-            <div className="relative">
-              <ExcelExportBtn
-                data={exportData}
-                fileName={`${report.jobTitle}_Resumes`}
-                className="w-full sm:w-auto"
-              />
-            </div>
-          </div>
+          <ExcelExportBtn
+            data={exportData}
+            fileName={`${report.jobTitle}_Resumes`}
+            className="w-full sm:w-auto"
+          />
+        </div>
+
+        {/* Summary Stats */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8 animate-fade-in-up-delay-1">
+          <SummaryCard label="Total Candidates" value={totalCandidates} />
+          <SummaryCard label="Average Match" value={`${avgMatch}%`} />
+          <SummaryCard label="Top Score" value={`${topScore}%`} highlight />
+          <SummaryCard label="Top Scorer" value={topScorer} />
         </div>
 
         {/* Data Table Container */}
-        <div className="bg-white/5 backdrop-blur-2xl rounded-3xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.5)] overflow-hidden animate-fade-in-up">
+        <div className="glass-card overflow-hidden animate-fade-in-up-delay-2">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse whitespace-nowrap lg:whitespace-normal">
               {/* Table Head */}
               <thead>
-                <tr className="border-b border-white/10 bg-black/20 text-xs uppercase tracking-wider text-zinc-400 font-semibold">
-                  <th className="p-5 pl-8 w-1/6">Candidate Name</th>
-                  <th className="p-5 w-1/6">Match %</th>
-                  <th className="p-5 w-1/4">Matched Skills</th>
-                  <th className="p-5 w-1/4">Missing Skills</th>
-                  <th className="p-5 pr-8 w-1/5">Verdict</th>
+                <tr className="border-b border-white/[0.06] bg-white/[0.02] text-xs uppercase tracking-wider text-zinc-500 font-semibold">
+                  <th className="p-4 pl-6 w-8">#</th>
+                  <th className="p-4 w-1/6">Candidate</th>
+                  <th className="p-4 w-1/6">Match</th>
+                  <th className="p-4 w-1/4">Matched Skills</th>
+                  <th className="p-4 w-1/4">Missing Skills</th>
+                  <th className="p-4 pr-6 w-1/5">Verdict</th>
                 </tr>
               </thead>
 
               {/* Table Body */}
-              <tbody className="divide-y divide-white/5">
-                {report.analysisResults
-                  .sort((a, b) => b.matchPercentage - a.matchPercentage) // Sort highest match first
-                  .map((candidate, index) => {
-                    const theme = getScoreTheme(candidate.matchPercentage);
+              <tbody className="divide-y divide-white/[0.04]">
+                {sortedResults.map((candidate, index) => {
+                  const theme = getScoreTheme(candidate.matchPercentage);
+                  const rank = getRankBadge(index);
 
-                    return (
-                      <tr
-                        key={index}
-                        className="hover:bg-white/3 transition-colors duration-200 group"
-                      >
-                        {/* Candidate Name */}
-                        <td className="p-5 pl-8 font-semibold text-white">
-                          <div className="flex items-center">
-                            <div className="h-8 w-8 rounded-full bg-zinc-800 border border-white/10 flex items-center justify-center text-xs text-zinc-400 mr-3 group-hover:border-zinc-500 transition-colors">
-                              {candidate.candidateName.charAt(0).toUpperCase()}
-                            </div>
-                            {candidate.candidateName}
+                  return (
+                    <tr
+                      key={index}
+                      className="hover:bg-white/[0.02] transition-colors duration-200 group"
+                    >
+                      {/* Rank */}
+                      <td className="p-4 pl-6">
+                        {rank ? (
+                          <span className={`inline-flex items-center justify-center w-7 h-7 rounded-lg ${rank.bg} border ${rank.border} text-sm`}>
+                            {rank.emoji}
+                          </span>
+                        ) : (
+                          <span className="text-xs text-zinc-600 font-medium ml-1.5">{index + 1}</span>
+                        )}
+                      </td>
+
+                      {/* Candidate Name */}
+                      <td className="p-4 font-medium text-white">
+                        <div className="flex items-center">
+                          <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-zinc-700 to-zinc-800 border border-white/[0.06] flex items-center justify-center text-[10px] text-zinc-400 font-bold mr-3 group-hover:border-zinc-600 transition-colors">
+                            {candidate.candidateName.charAt(0).toUpperCase()}
                           </div>
-                        </td>
+                          <span className="text-sm">{candidate.candidateName}</span>
+                        </div>
+                      </td>
 
-                        {/* Match Percentage */}
-                        <td className="p-5">
-                          <div className="flex items-center gap-3">
+                      {/* Match Percentage */}
+                      <td className="p-4">
+                        <div className="flex items-center gap-3">
+                          <span
+                            className={`px-2.5 py-1 rounded-md text-xs font-bold border ${theme.bg} ${theme.text} ${theme.border}`}
+                          >
+                            {candidate.matchPercentage}%
+                          </span>
+                          <div className="hidden sm:block w-16 h-1.5 bg-zinc-800/50 rounded-full overflow-hidden">
+                            <div
+                              className={`h-full rounded-full ${theme.bar}`}
+                              style={{
+                                width: `${candidate.matchPercentage}%`,
+                              }}
+                            ></div>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Matched Skills */}
+                      <td className="p-4">
+                        <div className="flex flex-wrap gap-1">
+                          {candidate.keySkillsMatched.map((skill, i) => (
                             <span
-                              className={`px-2.5 py-1 rounded-full text-xs font-bold border ${theme.bg} ${theme.text} ${theme.border}`}
+                              key={i}
+                              className="px-2 py-0.5 bg-emerald-500/[0.07] border border-emerald-500/10 text-emerald-400/80 text-[11px] rounded-md font-medium whitespace-nowrap"
                             >
-                              {candidate.matchPercentage}%
+                              {skill}
                             </span>
-                            <div className="hidden sm:block w-16 h-1.5 bg-zinc-800 rounded-full overflow-hidden">
-                              <div
-                                className={`h-full rounded-full ${theme.bar} transition-all duration-1000 ease-out`}
-                                style={{
-                                  width: `${candidate.matchPercentage}%`,
-                                }}
-                              ></div>
-                            </div>
-                          </div>
-                        </td>
+                          ))}
+                        </div>
+                      </td>
 
-                        {/* Matched Skills */}
-                        <td className="p-5">
-                          <div className="flex flex-wrap gap-1.5">
-                            {candidate.keySkillsMatched.map((skill, i) => (
+                      {/* Missing Skills */}
+                      <td className="p-4">
+                        <div className="flex flex-wrap gap-1">
+                          {candidate.missingSkills.length > 0 ? (
+                            candidate.missingSkills.map((skill, i) => (
                               <span
                                 key={i}
-                                className="px-2 py-1 bg-zinc-800/50 border border-zinc-700/50 text-zinc-300 text-[11px] rounded-md font-medium whitespace-nowrap"
+                                className="px-2 py-0.5 bg-red-500/[0.07] border border-red-500/10 text-red-400/80 text-[11px] rounded-md font-medium whitespace-nowrap"
                               >
                                 {skill}
                               </span>
-                            ))}
-                          </div>
-                        </td>
+                            ))
+                          ) : (
+                            <span className="text-emerald-500/60 text-xs italic">
+                              All matched ✓
+                            </span>
+                          )}
+                        </div>
+                      </td>
 
-                        {/* Missing Skills */}
-                        <td className="p-5">
-                          <div className="flex flex-wrap gap-1.5">
-                            {candidate.missingSkills.length > 0 ? (
-                              candidate.missingSkills.map((skill, i) => (
-                                <span
-                                  key={i}
-                                  className="px-2 py-1 bg-red-500/5 border border-red-500/10 text-red-400/80 text-[11px] rounded-md font-medium whitespace-nowrap"
-                                >
-                                  {skill}
-                                </span>
-                              ))
-                            ) : (
-                              <span className="text-zinc-500 text-xs italic">
-                                None
-                              </span>
-                            )}
-                          </div>
-                        </td>
-
-                        {/* Verdict */}
-                        <td className="p-5 pr-8">
-                          <p className="text-sm text-zinc-400 leading-relaxed max-w-xs line-clamp-2 hover:line-clamp-none transition-all duration-300">
-                            {candidate.briefVerdict}
-                          </p>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                      {/* Verdict */}
+                      <td className="p-4 pr-6">
+                        <p className="text-xs text-zinc-400 leading-relaxed max-w-xs line-clamp-2 hover:line-clamp-none transition-all duration-300 cursor-pointer">
+                          {candidate.briefVerdict}
+                        </p>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function SummaryCard({ label, value, highlight = false }) {
+  return (
+    <div className={`glass-card p-5 text-center ${highlight ? "border-blue-500/15" : ""}`}>
+      <p className="text-xs text-zinc-500 font-medium uppercase tracking-wider mb-1.5">{label}</p>
+      <p className={`text-xl font-bold truncate ${highlight ? "gradient-text" : "text-white"}`}>
+        {value}
+      </p>
     </div>
   );
 }

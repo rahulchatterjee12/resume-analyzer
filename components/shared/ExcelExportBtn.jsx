@@ -18,10 +18,10 @@ export default function ExcelExportBtn({ data, fileName, className = "" }) {
   return (
     <button
       onClick={exportToExcel}
-      className={`flex items-center justify-center space-x-2 bg-white text-zinc-950 font-bold text-sm px-6 py-3.5 rounded-xl hover:bg-zinc-200 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 shadow-[0_0_15px_rgba(255,255,255,0.1)] whitespace-nowrap ${className}`}
+      className={`group inline-flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold text-sm px-5 py-3 rounded-lg hover:from-blue-400 hover:to-indigo-500 active:scale-[0.97] transition-all duration-300 shadow-lg shadow-blue-500/20 whitespace-nowrap ${className}`}
     >
       <svg
-        className="w-5 h-5 text-zinc-900"
+        className="w-4 h-4 text-white group-hover:-translate-y-0.5 transition-transform"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -34,7 +34,7 @@ export default function ExcelExportBtn({ data, fileName, className = "" }) {
           d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
         ></path>
       </svg>
-      <span>Download as Excel</span>
+      <span>Export to Excel</span>
     </button>
   );
 }

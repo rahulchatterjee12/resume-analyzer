@@ -18,66 +18,79 @@ export default async function ReportsListPage() {
     .lean();
 
   return (
-    <div className="min-h-[calc(100vh-80px)] py-12 px-4 sm:px-6 lg:px-8 bg-linear-to-b from-zinc-800 via-zinc-950 to-black font-sans text-zinc-100">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-[calc(100vh-64px)] py-12 px-4 sm:px-6 lg:px-8 bg-zinc-950 font-sans text-zinc-100 relative overflow-hidden">
+      <div className="absolute inset-0 grid-pattern opacity-20"></div>
+
+      <div className="relative max-w-6xl mx-auto">
         {/* Header Section */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 pb-6 border-b border-white/10 animate-fade-in-up gap-4 sm:gap-0">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 pb-6 border-b border-white/[0.06] animate-fade-in-up gap-4 sm:gap-0">
           <div>
-            <h1 className="text-4xl font-extrabold tracking-tight text-white mb-2">
+            <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-2">
               My Reports
             </h1>
-            <p className="text-zinc-400 text-sm">
+            <p className="text-zinc-500 text-sm">
               Review and manage your AI-generated candidate shortlists.
             </p>
           </div>
           <Link
             href="/dashboard"
-            className="bg-white text-zinc-950 px-6 py-3 rounded-full font-bold text-sm hover:bg-zinc-200 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)] whitespace-nowrap"
+            className="group inline-flex items-center bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-5 py-2.5 rounded-lg font-semibold text-sm hover:from-blue-400 hover:to-indigo-500 active:scale-[0.97] transition-all duration-300 shadow-lg shadow-blue-500/20 whitespace-nowrap"
           >
-            + New Scan
+            <svg className="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4" />
+            </svg>
+            New Scan
           </Link>
         </div>
+
         {reports.length === 0 ? (
-          <div className="w-full bg-white/5 backdrop-blur-2xl p-12 sm:p-16 text-center rounded-3xl border border-dashed border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.5)] animate-fade-in-up">
-            <div className="text-5xl mb-6 opacity-80">📄</div>
+          <div className="w-full glass-card p-16 text-center animate-fade-in-up-delay-1">
+            <div className="w-20 h-20 rounded-2xl bg-white/[0.04] flex items-center justify-center mx-auto mb-6">
+              <svg className="w-10 h-10 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
             <h3 className="text-xl font-bold text-white mb-3">
-              No reports found
+              No reports yet
             </h3>
-            <p className="text-zinc-400 mb-8 max-w-md mx-auto">
-              You haven't generated any resume reports yet. Upload a job
+            <p className="text-zinc-500 mb-8 max-w-md mx-auto text-sm">
+              You haven&apos;t generated any resume reports yet. Upload a job
               description and some resumes to get started.
             </p>
             <Link
               href="/dashboard"
-              className="text-white font-semibold hover:text-zinc-300 hover:underline decoration-white/30 underline-offset-4 transition-all"
+              className="inline-flex items-center text-blue-400 hover:text-blue-300 font-semibold text-sm transition-colors group"
             >
-              Run your first AI analysis &rarr;
+              Run your first AI analysis
+              <svg className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in-up">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 animate-fade-in-up-delay-1">
             {reports.map((report) => (
               <div
                 key={report._id.toString()}
-                className="bg-white/5 backdrop-blur-2xl p-6 rounded-3xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:border-white/20 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between h-full group"
+                className="glass-card p-6 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between h-full group"
               >
                 <div>
-                  <div className="flex justify-between items-start mb-5 gap-4">
+                  <div className="flex justify-between items-start mb-5 gap-3">
                     <h2
-                      className="text-xl font-bold text-white truncate"
+                      className="text-lg font-bold text-white truncate"
                       title={report.jobTitle}
                     >
                       {report.jobTitle}
                     </h2>
-                    <span className="bg-white/10 border border-white/5 text-white text-xs px-3 py-1.5 rounded-full font-medium whitespace-nowrap">
+                    <span className="bg-blue-500/10 border border-blue-500/15 text-blue-400 text-xs px-2.5 py-1 rounded-full font-semibold whitespace-nowrap">
                       {report.analysisResults.length} Candidates
                     </span>
                   </div>
 
-                  <div className="text-sm text-zinc-400 mb-8 space-y-3">
+                  <div className="text-sm text-zinc-500 mb-6 space-y-2.5">
                     <div className="flex items-center">
                       <svg
-                        className="w-4 h-4 mr-2 text-zinc-500"
+                        className="w-3.5 h-3.5 mr-2 text-zinc-600"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -89,16 +102,17 @@ export default async function ReportsListPage() {
                           d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                         ></path>
                       </svg>
-                      <span>
-                        Scanned on:{" "}
-                        <span className="text-zinc-300">
-                          {new Date(report.createdAt).toLocaleDateString()}
-                        </span>
+                      <span className="text-xs">
+                        {new Date(report.createdAt).toLocaleDateString(undefined, {
+                          year: "numeric",
+                          month: "short",
+                          day: "numeric",
+                        })}
                       </span>
                     </div>
                     <div className="flex items-center">
                       <svg
-                        className="w-4 h-4 mr-2 text-zinc-500"
+                        className="w-3.5 h-3.5 mr-2 text-zinc-600"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -110,8 +124,8 @@ export default async function ReportsListPage() {
                           d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
                         ></path>
                       </svg>
-                      <span className="truncate">
-                        Top Match:{" "}
+                      <span className="text-xs truncate">
+                        Top:{" "}
                         <span className="text-zinc-300 font-medium">
                           {[...report.analysisResults].sort(
                             (a, b) => b.matchPercentage - a.matchPercentage,
@@ -124,9 +138,9 @@ export default async function ReportsListPage() {
 
                 <Link
                   href={`/dashboard/reports/${report._id.toString()}`}
-                  className="block w-full text-center bg-white/5 border border-white/10 text-white py-3 rounded-xl hover:bg-white/10 hover:border-white/20 transition-all duration-300 font-semibold shadow-sm"
+                  className="block w-full text-center bg-white/[0.04] border border-white/[0.06] text-zinc-300 py-2.5 rounded-lg hover:bg-white/[0.08] hover:border-white/[0.12] hover:text-white transition-all duration-300 font-medium text-sm group-hover:shadow-lg"
                 >
-                  View Full Report
+                  View Report →
                 </Link>
               </div>
             ))}
